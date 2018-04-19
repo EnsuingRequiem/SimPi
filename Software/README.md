@@ -5,11 +5,7 @@ Software applications required:
 ```
 alsa-lib  
 bluez  
-bluealsa  
-  glib  
-  sbc  
-  libbsd  
-  ncurses  
+bluealsa or pulseaudio  
 mpd  
 ```
 [potential software]  
