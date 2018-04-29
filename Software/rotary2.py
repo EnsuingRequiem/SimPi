@@ -6,9 +6,9 @@ import rotary_encoder
 
 pos = 0
 
-def callback(way):
+def callback(dir):
 	global pos
-	pos += way
+	pos += dir
 	print("pos={}".format(pos))
 
 pi = pigpio.pi()
