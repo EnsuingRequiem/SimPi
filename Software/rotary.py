@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 try:
-	import RPI.GPIO as GPIO
+	import RPi.GPIO as GPIO
 except RuntimeError:
 	print("Error importing RPI.GPIO! This is probably because you need superuser privileges. You can achieve this by using 'sudo' to run your scrpit")
 from time import sleep
