@@ -13,6 +13,6 @@ def callback(way):
 
 pi = pigpio.pi()
 decoder = rotary_encoder.decoder(pi, 13, 26, callback)
-time.sleep(300)
+sleep(300)
 decoder.cancel()
 pi.stop()
