@@ -2,19 +2,20 @@
 
 import time
 import pigpio
-
+import subprocess
 import rotary_encoder
 
-pos = 0
+vol = subprocess.call('awk -F"[][]" '/dB/ { print $4 } NR==6' <(amixer sget Digital) | awk 'NR > 1 { exit }; 1'', shell=True)
+print vol
 
-def callback (way):
-    global pos
+def rot_callback(way):
+    global vol
     pos += way
     print ("pos={}".format(pos))
 
 pi = pigpio.pi()
 
-decoder = rotary_encoder.decoder(pi, 13, 26, callback)
+decoder = rotary_encoder.decoder(pi, 13, 26, rot_callback)
 
 time.sleep(300)
 
