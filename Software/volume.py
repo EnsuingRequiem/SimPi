@@ -26,7 +26,14 @@ print vol
 
 def rot_callback(way):
     global vol
-    vol += way
+    if way > 0:
+        adj = "%sdB+" % (way)
+        subprocess.Popen(["amixer", "sset", "Digital", adj])
+    if way < 0:
+        adj = "%sdB-" % (way)
+        subprocess.Popen(["amixer", "sset", "Digital", adj])
+    awk_cmd = subprocess.Popen(["amixer sget Digital | awk -F\"[][]\" '/dB/ {{ print $4 }} NR==6' | awk 'NR > 1 {{ exit }}; 1'"], stdout=PIPE, shell=True)
+    vol = awk_cmd.communicate()[0]
     print ("vol={}".format(vol))
 
 pi = pigpio.pi()
