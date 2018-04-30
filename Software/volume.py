@@ -7,7 +7,7 @@ import rotary_encoder
 import shlex
 from subprocess import PIPE as PIPE
 
-awk_cmd = subprocess.Popen(["amixer sget Digital | awk -F\"[][]\" '/dB/ {{ print $4 }} NR==6' | awk 'NR > 1 {{ exit }}; 1'"] stdout-PIPE, shell=True)
+awk_cmd = subprocess.Popen(["amixer sget Digital | awk -F\"[][]\" '/dB/ {{ print $4 }} NR==6' | awk 'NR > 1 {{ exit }}; 1'"], stdout=PIPE, shell=True)
 
 #amix_cmd = subprocess.Popen(["amixer", "sget", "Digital"], stdout=PIPE)
 #awk_cmd1 = subprocess.Popen(["awk", "-F\"[][]\" '/dB/ { print $4 } NR==6'"], stdin=amix_cmd.stdout, stdout=PIPE)
