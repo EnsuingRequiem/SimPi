@@ -44,9 +44,9 @@ def loop_toggle(level):
             subprocess.Popen(["fuser", "-k", "/dev/snd/pcm*"])
 
 try:
-    decoder = vol_encoder.decoder(13, 26, rot_callback, 23, btn_callback)
-    button = vol_encoder.button(16, loop_toggle)
-    time.sleep(3000)
+    decoder = vol_encoder.decoder(26, 13, rot_callback, 23, btn_callback, 16, loop_toggle)
+    #button = vol_encoder.button(16, loop_toggle)
+    time.sleep(60000)
 except KeyboardInterrupt:
     print "\nVolume Control Cancelled"
 
