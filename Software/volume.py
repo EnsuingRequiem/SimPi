@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 try:
     import time
-    import pigpio
+    #import pigpio
     import subprocess
-    import rotary_encoder
-    import shlex
+    import vol_encoder
+    #import shlex
     from subprocess import PIPE as PIPE
 
     def rot_callback(way):
@@ -22,8 +22,7 @@ try:
         vol = awk_cmd.communicate()[0]
         print ("vol={}".format(vol))
 
-    pi = pigpio.pi()
-    decoder = rotary_encoder.decoder(pi, 13, 26, rot_callback)
+    decoder = vol_encoder.decoder(13, 26, rot_callback)
 
 except KeyboardInterrupt:
     print "\nVolume Control Cancelled"
@@ -32,5 +31,6 @@ except:
     print "Some error or exception ocurred."
 
 finally:
-    decoder.cancel()
-    pi.stop()
+    decoder.destroy()
+    #decoder.cancel()
+    #pi.stop()

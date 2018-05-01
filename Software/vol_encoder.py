@@ -1,135 +1,46 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
 
-import pigpio
+#Porting the pigpio rotary_encoder sample to use RPi.GPIO
+
+import RPi.GPIO
 
 class decoder:
+	def __init__(self, gpioA, gpioB, callback):
 
-   """Class to decode mechanical rotary encoder pulses."""
+		self.lastGpio = None
+		self.gpioA = gpioA
+		self.gpioB = gpioB
+		self.callback = callback
 
-   def __init__(self, pi, gpioA, gpioB, callback):
+		self.levA = 0
+		self.levB = 0
 
-      """
-      Instantiate the class with the pi and gpios connected to
-      rotary encoder contacts A and B.  The common contact
-      should be connected to ground.  The callback is
-      called when the rotary encoder is turned.  It takes
-      one parameter which is +1 for clockwise and -1 for
-      counterclockwise.
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(self.gpioA, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.gpioB, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-      EXAMPLE
+		GPIO.add_event_detect(self.gpioA, GPIO.BOTH, self._pulse)
+		GPIO.add_event_detect(self.gpioB, GPIO.BOTH, self._pulse)
 
-      import time
-      import pigpio
+	def _pulse(self, pin):
+		level = GPIO.input(pin)
+		if pin == self.gpioA:
+			self.levA = level
+		else:
+			self.levB = level
 
-      import rotary_encoder
+		if pin != self.lastGpio:
+			self.lastGpio = gpio
 
-      pos = 0
+			if pin == self.gpioA and level == 1:
+				if self.levB == 1:
+					self.callback(1)
+			elif pin == self.gpioB and level == 1:
+				if self.levA == 1:
+					self.callback(-1)
 
-      def callback(way):
-
-         global pos
-
-         pos += way
-
-         print("pos={}".format(pos))
-
-      pi = pigpio.pi()
-
-      decoder = rotary_encoder.decoder(pi, 7, 8, callback)
-
-      time.sleep(300)
-
-      decoder.cancel()
-
-      pi.stop()
-
-      """
-
-      self.pi = pi
-      self.gpioA = gpioA
-      self.gpioB = gpioB
-      self.callback = callback
-
-      self.levA = 0
-      self.levB = 0
-
-      self.lastGpio = None
-
-      self.pi.set_mode(gpioA, pigpio.INPUT)
-      self.pi.set_mode(gpioB, pigpio.INPUT)
-
-      self.pi.set_pull_up_down(gpioA, pigpio.PUD_UP)
-      self.pi.set_pull_up_down(gpioB, pigpio.PUD_UP)
-
-      self.cbA = self.pi.callback(gpioA, pigpio.EITHER_EDGE, self._pulse)
-      self.cbB = self.pi.callback(gpioB, pigpio.EITHER_EDGE, self._pulse)
-
-   def _pulse(self, gpio, level, tick):
-
-      """
-      Decode the rotary encoder pulse.
-
-                   +---------+         +---------+      0
-                   |         |         |         |
-         A         |         |         |         |
-                   |         |         |         |
-         +---------+         +---------+         +----- 1
-
-             +---------+         +---------+            0
-             |         |         |         |
-         B   |         |         |         |
-             |         |         |         |
-         ----+         +---------+         +---------+  1
-      """
-
-      if gpio == self.gpioA:
-         self.levA = level
-      else:
-         self.levB = level;
-
-      if gpio != self.lastGpio: # debounce
-         self.lastGpio = gpio
-
-         if   gpio == self.gpioA and level == 1:
-            if self.levB == 1:
-               self.callback(1)
-         elif gpio == self.gpioB and level == 1:
-            if self.levA == 1:
-               self.callback(-1)
-
-   def cancel(self):
-
-      """
-      Cancel the rotary encoder decoder.
-      """
-
-      self.cbA.cancel()
-      self.cbB.cancel()
-
-if __name__ == "__main__":
-
-   import time
-   import pigpio
-
-   import rotary_encoder
-
-   pos = 0
-
-   def callback(way):
-
-      global pos
-
-      pos += way
-
-      print("pos={}".format(pos))
-
-   pi = pigpio.pi()
-
-   decoder = rotary_encoder.decoder(pi, 7, 8, callback)
-
-   time.sleep(300)
-
-   decoder.cancel()
-
-   pi.stop()
+	def destroy(self):
+		GPIO.remove_event_detect(self.gpioA)
+		GPIO.remove_event_detect(self.gpioB)
+		GPIO.cleanup()
 
