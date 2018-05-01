@@ -2,7 +2,7 @@
 
 #Porting the pigpio rotary_encoder sample to use RPi.GPIO
 
-import RPi.GPIO
+import RPi.GPIO as GPIO
 
 class decoder:
 	def __init__(self, gpioA, gpioB, callback):
@@ -30,7 +30,7 @@ class decoder:
 			self.levB = level
 
 		if pin != self.lastGpio:
-			self.lastGpio = gpio
+			self.lastGpio = pin
 
 			if pin == self.gpioA and level == 1:
 				if self.levB == 1:
