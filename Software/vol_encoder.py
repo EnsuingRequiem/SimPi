@@ -52,3 +52,19 @@ class decoder:
 
     def _press(self, pin):
         self.btn_callback(GPIO.input(pin))
+
+class button:
+    def __init__(self, btn_pin, btn_callback):
+
+        self.btn_pin = btn_pin
+        self.btn_callback = btn_callback
+
+        GPIO.setup(self.btn_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.add_event_detect(self.btn_pin, GPIO.FALLING, self._press, bouncetime=500)
+
+    def destroy(self):
+        GPIO.remove_event_detect(self.btn_pin)
+        GPIO.cleanup()
+
+    def _press(self, pin):
+        self.btn_callback(GPIO.input(pin))

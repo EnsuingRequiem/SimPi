@@ -25,8 +25,27 @@ def rot_callback(way):
 
 def btn_callback(level):
     subprocess.Popen(["amixer", "-q", "sset", "Digital", "toggle"])
+
+def loop_toggle(level):
+    lsof_out = subprocess.Popen(["lsof -F c /dev/snd/pcm* | awk '/^c/ { print substr($1,2) }'"], stdout=PIPE, shell=True)
+    playing = lsof_out.communicate()[0]
+    just_started = False
+
+    if not playing:
+        just_started = True
+        subprocess.Popen(["alsaloop", "-dC hw:1,0", "-P hw:0,0", "-t 50000"])
+
+    if playing and just_started == False:
+        if playing == "bluealsa-aplay":
+            subprocess.Popen(["fuser", "-k", "/dev/snd/pcm*"])
+        if playing == "librespot":
+            subprocess.Popen(["sudo", "systemctl", "restart", "librespot"])
+        if playing == "alsaloop":
+            subprocess.Popen(["fuser", "-k", "/dev/snd/pcm*"])
+
 try:
     decoder = vol_encoder.decoder(13, 26, rot_callback, 23, btn_callback)
+    button = vol_encoder.button(16, loop_toggle)
     time.sleep(3000)
 except KeyboardInterrupt:
     print "\nVolume Control Cancelled"
